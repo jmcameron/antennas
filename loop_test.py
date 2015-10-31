@@ -1,5 +1,4 @@
-"""
-Tests for Loop
+"""Tests for Loop
 
 >>> from loop import Loop
 
@@ -29,8 +28,12 @@ NOTE: This does not correspond exactly to the loop calculator on
       Not sure if there is a problem or not.  But it is close.  The
       differences may be to approximations by Hart for octagons?
 
+      Using the parameters above and setting the shape to a circle, these
+      equations duplicate the Excel spreadsheet created by Steve Yates, which
+      is available at: http://www.aa5tb.com/loop.html
 
-Now adjust a couple of things
+
+Now adjust a couple of things and try another test
 
 >>> a.s = 12.0
 >>> a.f = 10.0
@@ -53,7 +56,6 @@ Distributed capacity: 9.840 pF
 Antenna bandwidth: 8.927 kHz
 Quality Factor (Q): 1120.14
 Efficiency: 48.7 %
-
 
 """
 

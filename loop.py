@@ -1,5 +1,16 @@
 """
 Implement the basic small loop antenna equations developed by Ted Hart
+
+Using the parameters in first test in loop_test.py and setting the shape
+to a circle, the formulas below duplicate the Excel spreadsheet created by
+Steve Yates, which is available at: http://www.aa5tb.com/loop.html
+
+-Jonathan Cameron, KF6RTA
+
+2015-10-30
+Copyright (c) 2015
+License: GPL 2.0
+
 """
 from __future__ import print_function
 
@@ -9,9 +20,10 @@ from math import sqrt, pi, log10
 # The known shapes
 
 CIRCLE = 'circle'
+SQUARE = 'square'
 OCTAGON = 'octagon'
 
-KNOWN_SHAPES = (CIRCLE, OCTAGON)
+KNOWN_SHAPES = (CIRCLE, SQUARE, OCTAGON)
 
 
 # Some convenience functions
@@ -55,8 +67,13 @@ class Loop(object):
     def recomputeShape(self):
         if self._shape == CIRCLE:
             self._l = 0.0
-            self._diameter = self._s / pi
+            self._diameter = self._s / (2.0*pi)
             self._a = pi * self._diameter**2.0
+
+        elif self._shape == SQUARE:
+            self._l = self._s / 4.0
+            self._diameter = self._l
+            self._a = self._l**2.0
             
         elif self._shape == OCTAGON:
             self._l = self._s / 8.0
@@ -72,8 +89,10 @@ class Loop(object):
         return self._shape
 
     @shape.setter
-    def shape(self, val):
-        self._shape = val
+    def shape(self, new_shape):
+        if new_shape not in KNOWN_SHAPES:
+            raise ValueError("ERROR: '%s' is not a know loop shape!" % new_shape)
+        self._shape = new_shape
         self.recomputeShape()
 
     @property
@@ -141,7 +160,7 @@ class Loop(object):
 
     def bandwidth(self):
         """Loop bandwidth, hertz"""
-        return self._f / self.Q()
+        return self._f * 1e6 / self.Q()
 
     def Cd(self):
         """Distributed capacity, pF"""
@@ -155,7 +174,8 @@ class Loop(object):
         sum = "Loop antenna shape: %s\n" % self._shape
         sum += indent + "   Conductor length: %.3f feet\n" % self._s
         sum += indent + "   Conductor diameter: %.3f inches\n" % self._d
-        sum += indent + "   Segment length: %.3f feet\n" % self._l
+        if self._shape != CIRCLE:
+            sum += indent + "   Segment length: %.3f feet\n" % self._l
         sum += indent + "   Loop area: %.3f square feet\n" % self._a
         sum += indent + "   Loop diameter: %.3f feet\n" % self._diameter
         sum += indent + "Operating frequency: %.3f MHz\n" % self._f
@@ -166,7 +186,7 @@ class Loop(object):
         sum += indent + "Tuning capacitance: %.3f pF\n" % pico(self.Ct())
         sum += indent + "Capacitor voltage: %.1f volts\n" % self.Vc()
         sum += indent + "Distributed capacity: %.3f pF\n" % self.Cd()
-        sum += indent + "Antenna bandwidth: %.3f kHz\n" % kilo(self.bandwidth())
+        sum += indent + "Antenna bandwidth: %.3f kHz\n" % (self.bandwidth() * 1e-3)
         sum += indent + "Quality Factor (Q): %.2f\n" % self.Q()
         sum += indent + "Efficiency: %.1f %%" % (self.efficiency() * 100.0)
         return sum
