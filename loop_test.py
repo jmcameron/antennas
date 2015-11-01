@@ -1,6 +1,10 @@
-"""Tests for Loop
+"""
+TESTS FOR LOOP
 
 >>> from loop import Loop
+
+Try a test from the www.66pacific.com calculator
+------------------------------------------------
 
 >>> a = Loop('octagon', 9.0, 14.0, 0.9, 100.0)
 
